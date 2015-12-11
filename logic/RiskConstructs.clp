@@ -39,7 +39,7 @@
 	(slot score)
 	(slot country-name))
 	
-(deffacts testFacts
+(deffacts initial-facts
 	;; All borders for countries in Risk
 	(border (country-a  North-Africa ) (country-b  Brazil ))
 	(border (country-a  North-Africa ) (country-b  Western-Europe ))
@@ -207,6 +207,13 @@
 	(border (country-a  Peru ) (country-b  Argentina ))
 	(border (country-a  Peru ) (country-b  Brazil ))
 	(border (country-a  Peru ) (country-b  Venezuela ))
+
+	(continent-value Australia 11)
+	(continent-value South-America 8)
+	(continent-value Asia 2)
+	(continent-value North-America 5)
+	(continent-value Africa 7)
+	(continent-value Europe 6)
 
 	
 	
