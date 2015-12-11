@@ -6,6 +6,7 @@ This project uses a knowledge based systems language in order to play the game o
 ###Requirements
  - CLIPS must be installed and in your system $PATH. 
  - The Python application requires at least Python 3.
+ - [TkInter](https://wiki.python.org/moin/TkInter)
 
 ##Running
 
