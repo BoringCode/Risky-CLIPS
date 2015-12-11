@@ -5,7 +5,7 @@ class CLIPSError(Exception): pass
 class InvalidMessage(Exception): pass
 
 class CLIPS(object):
-    def __init__(self, *cmds, exe=None, prompt="CLIPS> ", maxread=1024):
+    def __init__(self, exe=None, prompt="CLIPS> ", maxread=1024):
         if not exe:
             if os.name == 'nt':
                 exe = r"C:\Program Files (x86)\CLIPS\CLIPSDOS64.exe"
@@ -18,9 +18,10 @@ class CLIPS(object):
         self.output = ""
         # start up clips
         self.startCLIPS()
-        # loop through cmd
-        for cmd in cmds:
-            self.sendRecv(cmd)
+
+    #Clean up after myself
+    def __del__(self):
+        self.exit()
 
     def startCLIPS(self):
         self.pipe = Popen([self.exe], stdin=PIPE, stdout=PIPE, bufsize=0)
@@ -31,7 +32,7 @@ class CLIPS(object):
         return self.recv()
 
     def send(self, cmd):
-        if not validmessage(cmd):
+        if not self.validmessage(cmd):
             raise InvalidMessage
         writeBytes = (cmd + '\n').encode()
         self.pipe.stdin.write(writeBytes)
@@ -156,26 +157,26 @@ class CLIPS(object):
     def load(self, name):
         self.sendRecv('(load "' + name + '")')
 
-def validmessage(s):
-    st = []
-    quote = False
-    idx = len(s)
-    for i, c in enumerate(s):
-        if c == '(':
-            if not quote:
-                st.insert(0, c)
-        elif c == ')':
-            if not quote:
-                if not st:
-                    return False
-                elif st[0] == '(':
-                    st.pop()
-                else:
-                    return False
-        elif c == '"':
-            quote = not quote
-        elif c == ';' and not quote:
-            idx = i
-            break
-    s = s[:idx] # strip comment
-    return not(bool(st)) and not quote and bool(s.strip())
+    def validmessage(self, s):
+        st = []
+        quote = False
+        idx = len(s)
+        for i, c in enumerate(s):
+            if c == '(':
+                if not quote:
+                    st.insert(0, c)
+            elif c == ')':
+                if not quote:
+                    if not st:
+                        return False
+                    elif st[0] == '(':
+                        st.pop()
+                    else:
+                        return False
+            elif c == '"':
+                quote = not quote
+            elif c == ';' and not quote:
+                idx = i
+                break
+        s = s[:idx] # strip comment
+        return not(bool(st)) and not quote and bool(s.strip())
