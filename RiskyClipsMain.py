@@ -1,3 +1,5 @@
+# Bradley Rosenfeld, Austin Munn, Matt Hall, and Noah Drabinsky
+
 from riskStructs import *
 import random
 from lib.ClipsWrapper import *
