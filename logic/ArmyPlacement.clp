@@ -11,49 +11,19 @@
 ;;;;; Value for continents	
 ;; Should be refactored
 
-(defrule add-Australia-value
+(defrule add-continent-value
 	(game-phase (player ?p))
-	(country (owner ?p) (country-name ?country-name) (continent Australia))
+	(country (owner ?p) (country-name ?country-name) (continent ?continent))
+	(continent-value ?continent ?value)
 	=>
-	(assert (add-value (country-name ?country-name) (value 11))))
+	(assert (add-value (country-name ?country-name) (value ?value))))
 	
 (defrule create-score (declare (salience 10))
 	(place-army)
 	(game-phase (player ?p))
 	(country (owner ?p) (country-name ?country-name))
 	=>
-	(assert (choice-score (score 0) (country ?country-name))))
-	
-(defrule add-South-America-value
-	(game-phase (player ?p))
-	(country (owner ?p) (country-name ?country-name) (continent South-America))
-	=>
-	(assert (add-value (country-name ?country-name) (value 8))))
-	
-(defrule add-Asia-value
-	(game-phase (player ?p))
-	(country (owner ?p) (country-name ?country-name) (continent Asia))
-	=>
-	(assert (add-value (country-name ?country-name) (value 2))))
-
-(defrule add-North-America-value
-	(game-phase (player ?p))
-	(country (owner ?p) (country-name ?country-name) (continent North-America))
-	=>
-	(assert (add-value (country-name ?country-name) (value 5))))
-
-(defrule add-Africa-value
-	(game-phase (player ?p))
-	(country (owner ?p) (country-name ?country-name) (continent Africa))
-	=>
-	(assert (add-value (country-name ?country-name) (value 7))))
-	
-(defrule add-Europe-value
-	(game-phase (player ?p))
-	(country (owner ?p) (country-name ?country-name) (continent Europe))
-	=>
-	(assert (add-value (country-name ?country-name) (value 6))))
-	
+	(assert (choice-score (score 0) (country ?country-name))))	
 	
 ;;;; adds value to owned adjacent countries
 (defrule add-adj-value
