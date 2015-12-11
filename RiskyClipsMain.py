@@ -132,8 +132,9 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=Fals
     else: #AUTOMATIC
         print("I'm trying to take a book")
         cards = playerDMe[player]["cards"]
-        facts = []
-        facts.append("search-books")
+        facts = ["search-books"]
+        gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
+        facts.append(gamePhase)
         for country in countryD:
             # continent curently not necessary in logic
             countryFact = {"country":[{"country-name": country}, {"continent": "null"}, {"owner": countryD[country]["owner"]}, {"troops": countryD[country]["armies"]}]}
@@ -248,6 +249,8 @@ def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     else: #AUTOMATIC
         facts = []
         facts.append("place-army")
+        gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
+        facts.append(gamePhase)
         for country in countryD:
             for continent in continentD:
                 if country in continentD[continent]:
@@ -256,6 +259,7 @@ def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
         clp.reset()
         clp.assertFacts(facts)
         clp.run()
+        clp.printFacts()
         facts = clp.facts()
         # Get last fact (facts[list(facts.keys())] and indexes of book from choice {'book-choice': ['15.0', '4', '1', '0']}
         choice = facts[list(facts.keys())[-1]]['user-choice'][1]['country-name']

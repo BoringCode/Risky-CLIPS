@@ -208,8 +208,8 @@
 	(border (country-a  Peru ) (country-b  Brazil ))
 	(border (country-a  Peru ) (country-b  Venezuela ))
 
-	
-	
+
+
 	; Debugging purposes
 	;(country (country-name Egypt) (continent europe) (owner 1) (troops 4))
 	;(country (country-name Iceland) (continent europe) (owner 2) (troops 8))
@@ -217,7 +217,7 @@
 	;(country (country-name Middle-East) (continent australia) (owner 1) (troops 2))
 	;(country (country-name alaska) (continent north-america) (owner 1) (troops 2))
 	;(country (country-name russia) (continent asia) (owner 2) (troops 20))
-	
+
 	;(victory-card (country Egypt) (type infantry) (idx 0))
 	;(victory-card (country Iceland) (type artillery) (idx 1))
 	;(victory-card (country Ontario) (type wild) (idx 2))
@@ -225,8 +225,8 @@
 	;(victory-card (country alaska) (type cavalry) (idx 4))
 
 	(my-countries)
-	
+
 	; Send in game phase
-	(game-phase (player 1) (turn-num 20) (book-reward 8)) 
-	
+	;(game-phase (player 1) (turn-num 20) (book-reward 8))
+
 	(user-choice (score -15) (country-name nil))	)
