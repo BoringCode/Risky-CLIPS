@@ -3,8 +3,9 @@ import random
 from lib.ClipsWrapper import *
 
 clp = CLIPS()
-clp.load("CLIPSLogic/risk_logic.clp")
-clp.reset()
+clp.load("logic/RiskConstructs.clp")
+clp.load("logic/BookSelection.clp")
+clp.load("logic/ArmyPlacement.clp")
 
 def getPlayerCountryList(player,countryD):
     countryList=[]
