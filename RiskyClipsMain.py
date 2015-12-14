@@ -72,7 +72,7 @@ def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=False
                 countryList = countryList + enemies
     if not manual: #AUTO
         facts = countryList
-        facts.append("attack-from")
+        facts.append("attack")
         gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
         facts.append(gamePhase)
         clp.reset()
@@ -84,39 +84,83 @@ def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=False
             if "attack-from-country" in facts[factID]:
                 attackCountry = facts[factID]["attack-from-country"][0].replace("-", " ")
                 break
-        print(attackCountry)
-        input()
         if not attackCountry:
             return "NO ATTACK"
         else:
+            attackFrom = attackCountry
             return attackCountry
 
 def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCountry,manual=False):
     #given the country attacking from
     #get the list of attached countries
-    possiblesList=[]
+    facts=[]
+    facts.append({
+        "country": {
+            "country-name": attackFromCountry,
+            "owner": player,
+            "troops": countryD[attackFromCountry]["armies"]
+        }
+    })
     for eachCountry in adjacentCountriesD[attackFromCountry]:
         if countryD[eachCountry]["owner"]!=player:
-            possiblesList.append(eachCountry)
-    if manual: #MANUAL
-        for index in range(len(possiblesList)):
-            print(str(index)+".",possiblesList[index])
-        choice=-1
-        while choice<0 or choice>=len(possiblesList):
-            choice = input("Which country would you like to attack? => ")
-            if choice.isnumeric():
-                choice=int(choice)
-            else:
-                choice=0
-        return possiblesList[choice],countryD[possiblesList[choice]]["owner"]
-    else: #AUTOMATIC
-        return possiblesList[0],countryD[possiblesList[0]]["owner"]
+            cdict = {"country": [
+                {"country-name": eachCountry},
+                {"owner": countryD[eachCountry]["owner"]},
+                {"troops": countryD[eachCountry]["armies"]}
+            ]}
+            facts.append(cdict)
+    if not manual: #AUTOMATIC
+        facts = clp.facts()
+        attackCountry = False
+        for factID in facts:
+            if "attack-to-country" in facts[factID]:
+                attackCountry = facts[factID]["attack-to-country"][0].replace("-", " ")
+                break
+        attackTo = attackCountry
+        return attackCountry,countryD[attackCountry]["owner"]
 
 def continueAttack(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
-    if manual: #MANUAL
-        return(input("Attack again? (Enter to attack, RETREAT and enter to end attack) => "))
-    else: #AUTOMATIC
+    facts = clp.facts()
+    attackFromCountry = False
+    attackToCountry = False
+    #Find the country we are attacking, we have to do this because Dr. White isn't sending us this data already
+    for factID in facts:
+        if "attack-from-country" in facts[factID]:
+            attackFromCountry = facts[factID]["attack-from-country"][0].replace("-", " ")
+        if "attack-to-country" in facts[factID]:
+            attackToCountry = facts[factID]["attack-to-country"][0].replace("-", " ")
+        if attackFromCountry and attackToCountry: break
+    facts = []
+    facts.append({
+        "country": {
+            "country-name": attackFromCountry,
+            "owner": countryD[attackFromCountry]["owner"],
+            "troops": countryD[attackFromCountry]["armies"]
+        }
+    })
+    facts.append({
+        "country": {
+            "country-name": attackToCountry,
+            "owner": countryD[attackToCountry]["owner"],
+            "troops": countryD[attackToCountry]["armies"]
+        }
+    })
+    facts.append("attack")
+    gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
+    facts.append(gamePhase)
+    clp.reset()
+    clp.assertFacts(facts)
+    clp.run()
+    facts = clp.facts()
+    continueAttacking = False
+    for factID in facts:
+        if "attack-from-country" in facts[factID]:
+            continueAttacking = True
+            break
+    if continueAttacking:
         return ""
+    else:
+        return "RETREAT"
         
 def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     print("IN PLAYER",player)
