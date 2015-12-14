@@ -8,6 +8,7 @@ clp = CLIPS()
 clp.load("logic/RiskConstructs.clp")
 clp.load("logic/BookSelection.clp")
 clp.load("logic/ArmyPlacement.clp")
+clp.load("logic/Attack.clp")
 
 def getPlayerCountryList(player,countryD):
     countryList=[]
@@ -17,11 +18,16 @@ def getPlayerCountryList(player,countryD):
     return countryList
 
 def atLeastOneAdjacentEnemy(countryKey,player,countryD):
-    atLeastOne=False
-    for each in adjacentCountriesD[countryKey]:
-        if countryD[each]["owner"]!=player:
-            atLeastOne=True
-    return atLeastOne
+    enemies = []
+    for country in adjacentCountriesD[countryKey]:
+        if countryD[country]["owner"]!=player:
+            cdict = {"country": [
+                {"country-name": country},
+                {"owner": countryD[country]["owner"]},
+                {"troops": countryD[country]["armies"]}
+            ]}
+            enemies.append(cdict)
+    return enemies
 
 def hasPickedABook(playerD,player,indexList):
     artCount=0
@@ -53,36 +59,37 @@ def hasPickedABook(playerD,player,indexList):
 
 def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
     countryList=[]
-    countList=[]
     for countryKey in countryD:
         if countryD[countryKey]["owner"]==player and countryD[countryKey]["armies"]>=2:
-            if atLeastOneAdjacentEnemy(countryKey,player,countryD):
-                countryList.append(countryKey)
-                countList.append(countryD[countryKey]["armies"])
-    if manual: #MANUAL
-        if countryList==[]:
-            return "NO ATTACK"
-        print("0.  NO ATTACK")
-        for i in range(1,len(countryList)+1):
-            print(str(i)+".  "+countryList[i-1])
-        choice=-1
-        while choice<0 or choice>len(countryList):
-            choice = input("From which country would you like to attack? => ")
-            if choice=="":
-                choice=1
-            elif choice.isnumeric() and int(choice)>=1:
-                choice=int(choice)-1
-            else:
-                choice=0
-        if choice==0:
+            enemies = atLeastOneAdjacentEnemy(countryKey,player,countryD)
+            if len(enemies) > 0:
+                cdict = {"country": [
+                    {"country-name": countryKey},
+                    {"owner": countryD[countryKey]["owner"]},
+                    {"troops": countryD[countryKey]["armies"]}
+                ]}
+                countryList.append(cdict)
+                countryList = countryList + enemies
+    if not manual: #AUTO
+        facts = countryList
+        facts.append("attack-from")
+        gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
+        facts.append(gamePhase)
+        clp.reset()
+        clp.assertFacts(facts)
+        clp.run()
+        facts = clp.facts()
+        attackCountry = False
+        for factID in facts:
+            if "attack-from-country" in facts[factID]:
+                attackCountry = facts[factID]["attack-from-country"][0].replace("-", " ")
+                break
+        print(attackCountry)
+        input()
+        if not attackCountry:
             return "NO ATTACK"
         else:
-            return countryList[choice-1]
-    else: #AUTOMATIC
-        if countryList==[]:
-            return "NO ATTACK"
-        else:
-            return countryList[0]
+            return attackCountry
 
 def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCountry,manual=False):
     #given the country attacking from
@@ -261,7 +268,6 @@ def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
         clp.reset()
         clp.assertFacts(facts)
         clp.run()
-        clp.printFacts()
         facts = clp.facts()
         # Get last fact (facts[list(facts.keys())] and indexes of book from choice {'book-choice': ['15.0', '4', '1', '0']}
         choice = facts[list(facts.keys())[-1]]['user-choice'][1]['country-name']
