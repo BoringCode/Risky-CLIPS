@@ -1,5 +1,5 @@
 # Risky-CLIPS
-A CLIPS program that plays Risk. Made by [Bradley Rosenfeld](https://github.com/BoringCode), [Austin Munn](https://github.com/amunn33), [Matt Hall](https://github.com/matthalltu), and Noah Drabinsky
+A CLIPS program that plays Risk. Made by [Bradley Rosenfeld](https://github.com/BoringCode), [Austin Munn](https://github.com/amunn33), [Matt Hall](https://github.com/matthalltu), and [Noah Drabinsky](https://github.com/ndrabins)
 
 This project uses a knowledge based systems language in order to play the game of Risk. Python runs the tournament code and simply passed data back and forth between the CLIPS player code.
 
