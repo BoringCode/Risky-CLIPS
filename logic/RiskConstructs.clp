@@ -38,6 +38,10 @@
 (deftemplate user-choice
 	(slot score)
 	(slot country-name))
+
+(deftemplate last-attack
+	(slot from)
+	(slot to) )
 	
 (deffacts initial-facts
 	;; All borders for countries in Risk

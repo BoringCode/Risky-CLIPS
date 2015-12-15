@@ -9,6 +9,9 @@ clp.load("logic/RiskConstructs.clp")
 clp.load("logic/BookSelection.clp")
 clp.load("logic/ArmyPlacement.clp")
 clp.load("logic/Attack.clp")
+clp.load("logic/MoveTroops.clp")
+
+lastAttack = [False, False]
 
 def getPlayerCountryList(player,countryD):
     countryList=[]
@@ -88,6 +91,7 @@ def attackFromCountry(player,countryD,bookArmiesBonusList,playerDMe,manual=False
             return "NO ATTACK"
         else:
             attackFrom = attackCountry
+            lastAttack[0] = attackFrom
             return attackCountry
 
 def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCountry,manual=False):
@@ -117,6 +121,7 @@ def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCoun
                 attackCountry = facts[factID]["attack-to-country"][0].replace("-", " ")
                 break
         attackTo = attackCountry
+        lastAtack[1] = attackTo
         return attackCountry,countryD[attackCountry]["owner"]
 
 def continueAttack(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
@@ -183,7 +188,6 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=Fals
             if not hasPickedABook(playerDMe,player,listOfCardIndicesToPlay):
                 listOfCardIndicesToPlay=[]
     else: #AUTOMATIC
-        print("I'm trying to take a book")
         cards = playerDMe[player]["cards"]
         facts = ["search-books"]
         gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
@@ -220,7 +224,26 @@ def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,a
             else:
                 howManyToMove=int(howManyToMove)
     else: #AUTOMATIC
-        howManyToMove=countryD[attackFrom]["armies"]-1
+        lastAttack = {"last-attack":[{"from": lastAttack[0]}, {"to": lastAttack[1]}]}
+        facts = ["move-troops"]
+        facts.append(lastAttack)
+        for country in countryD:
+            # continent curently not necessary in logic
+            countryFact = {"country":[{"country-name": country}, {"continent": "null"}, {"owner": countryD[country]["owner"]}, {"troops": countryD[country]["armies"]}]}
+            facts.append(countryFact)
+        clp.reset()
+        clp.assertFacts(facts)
+        clp.reset()
+        clp.run()
+        facts = clp.facts()
+        moveAmount = 0
+        for factID in facts:
+            if "move-troop-amount" in facts[factID]:
+                moveAmount = facts[factID]["move-troop-amount"][0]
+                break
+        if moveAmount < 1:
+            moveAmount = 1
+        howManyToMove = moveAmount
     return howManyToMove
 
 def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
