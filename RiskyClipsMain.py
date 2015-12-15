@@ -121,7 +121,7 @@ def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCoun
                 attackCountry = facts[factID]["attack-to-country"][0].replace("-", " ")
                 break
         attackTo = attackCountry
-        lastAtack[1] = attackTo
+        lastAttack[1] = attackTo
         return attackCountry,countryD[attackCountry]["owner"]
 
 def continueAttack(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
@@ -204,13 +204,18 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=Fals
         clp.run()
         facts = clp.facts()
         # Get last fact (facts[list(facts.keys())] and indexes of book from choice {'book-choice': ['15.0', '4', '1', '0']}
-        indexStringList = facts[list(facts.keys())[-1]]['book-choice'][1:]
+        for factID in facts:
+            if "book-choice" in facts[factID]:
+                indexStringList = facts[factID]["book-choice"][1:]
+                break
+        #indexStringList = facts[list(facts.keys())[-1]]['book-choice'][1:]
         for idx in indexStringList:
             listOfCardIndicesToPlay.append(int(idx))
     return listOfCardIndicesToPlay
 
 def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,attackFrom,manual=False):
     if manual: #MANUAL
+        clp.printFacts()
         howManyToMove = input("\nHow many of the " + str(countryD[attackFrom]["armies"]-1) + " armies would you like to move? => ")    
         if howManyToMove=="":
             howManyToMove=countryD[attackFrom]["armies"]-1
@@ -224,24 +229,29 @@ def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,a
             else:
                 howManyToMove=int(howManyToMove)
     else: #AUTOMATIC
-        lastAttack = {"last-attack":[{"from": lastAttack[0]}, {"to": lastAttack[1]}]}
+        attackFact = {"last-attack":[{"from": lastAttack[0]}, {"to": lastAttack[1]}]}
+        gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
         facts = ["move-troops"]
-        facts.append(lastAttack)
+        facts.append(attackFact)
+        facts.append(gamePhase)
         for country in countryD:
             # continent curently not necessary in logic
             countryFact = {"country":[{"country-name": country}, {"continent": "null"}, {"owner": countryD[country]["owner"]}, {"troops": countryD[country]["armies"]}]}
             facts.append(countryFact)
         clp.reset()
         clp.assertFacts(facts)
-        clp.reset()
         clp.run()
         facts = clp.facts()
-        moveAmount = 0
+        clp.printFacts()
+        moveAmount = "none"
         for factID in facts:
             if "move-troop-amount" in facts[factID]:
-                moveAmount = facts[factID]["move-troop-amount"][0]
+                moveAmount = int(float(facts[factID]["move-troop-amount"][0]))
                 break
-        if moveAmount < 1:
+        # No move amount created because country is surrounded by friendlies
+        if moveAmount == "none":
+            moveAmount = countryD[attackFrom]["armies"]-1
+        elif moveAmount < 1:
             moveAmount = 1
         howManyToMove = moveAmount
     return howManyToMove
