@@ -1,7 +1,7 @@
 (defrule find-attack-ratios
 	(attack)
 	(game-phase (player ?pname))
-	(country (country-name ?player-country) (owner ?pname) (troops ?player-troops))
+	(country (country-name ?player-country) (owner ?pname) (troops ?player-troops&:(> ?player-troops 3)))
 	(border (country-a ?player-country) (country-b ?enemy-country))
 	(country (country-name ?enemy-country) (owner ~?pname) (troops ?enemy-troops))
 	=>

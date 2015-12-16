@@ -12,6 +12,7 @@
 ;; Should be refactored
 
 (defrule add-continent-value
+	(place-army)
 	(game-phase (player ?p))
 	(country (owner ?p) (country-name ?country-name) (continent ?continent))
 	(continent-value ?continent ?value)
@@ -20,6 +21,7 @@
 	
 (defrule create-score (declare (salience 10))
 	(place-army)
+	(place-army)
 	(game-phase (player ?p))
 	(country (owner ?p) (country-name ?country-name))
 	=>
@@ -27,6 +29,7 @@
 	
 ;;;; adds value to owned adjacent countries
 (defrule add-adj-value
+	(place-army)
 	(game-phase (player ?p))
 	(country (owner ?p) (country-name ?country-name))
 	(country (owner ?p) (country-name ?country-name2&~country-name))
@@ -36,6 +39,7 @@
 	
 ;;;; ensure surrounded country does not receive troops
 (defrule sub-surrounded-value (declare (salience -1))
+	(place-army)
 	(game-phase (player ?p))
 	(country (owner ?p) (country-name ?country-name))
 	(forall (border (country-a ?country-name) (country-b ?country-name2))
@@ -45,6 +49,7 @@
 	(assert (remove-add-values ?country-name)) )
 
 (defrule clear-add-values (declare (salience -1))
+	(place-army)
 	(remove-add-values ?country-name)
 	?adder <- (add-value (country-name ?country-name) (value ?val&~-10))
 	=>
@@ -52,6 +57,7 @@
 
 
 (defrule add-value-score (declare (salience -2))
+	(place-army)
 	(game-phase (player ?p))
 	(country (owner ?p) (country-name ?country-name))
 	?addval <- (add-value (country-name ?country-name) (value ?val))
@@ -61,6 +67,7 @@
 	(modify ?score (score (+ ?num ?val))))
 		
 (defrule find-highest-val (declare (salience -3))
+	(place-army)
 	?u <- (user-choice (score ?user-val) (country-name ?cname))
 	?choice <-(choice-score (country ?country-name) (score ?choice-val))
 	(test (> ?choice-val ?user-val))

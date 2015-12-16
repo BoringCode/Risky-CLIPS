@@ -10,6 +10,7 @@ clp.load("logic/BookSelection.clp")
 clp.load("logic/ArmyPlacement.clp")
 clp.load("logic/Attack.clp")
 clp.load("logic/MoveTroops.clp")
+clp.load("logic/Reinforce.clp")
 
 lastAttack = [False, False]
 
@@ -215,7 +216,7 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=Fals
 
 def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,attackFrom,manual=False):
     if manual: #MANUAL
-        clp.printFacts()
+        #clp.printFacts()
         howManyToMove = input("\nHow many of the " + str(countryD[attackFrom]["armies"]-1) + " armies would you like to move? => ")    
         if howManyToMove=="":
             howManyToMove=countryD[attackFrom]["armies"]-1
@@ -242,7 +243,7 @@ def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,a
         clp.assertFacts(facts)
         clp.run()
         facts = clp.facts()
-        clp.printFacts()
+        #clp.printFacts()
         moveAmount = "none"
         for factID in facts:
             if "move-troop-amount" in facts[factID]:
@@ -305,6 +306,26 @@ def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
             else:
                 howManyToMove=countryD[troopMovementCandidateFromList[fromChoice]]["armies"]-1
     else: #AUTOMATIC
+        gamePhase = {"game-phase":[{"player": player}, {"turn-num": 1}, {"book-reward": bookArmiesBonusList[0]}]}
+        facts = ["reinforce-troops"]
+        facts.append(gamePhase)
+        for country in countryD:
+            countryFact = {"country":[{"country-name": country}, {"continent": "null"}, {"owner": countryD[country]["owner"]}, {"troops": countryD[country]["armies"]}]}
+            facts.append(countryFact)
+        clp.reset()
+        clp.assertFacts(facts)
+        clp.run()
+        facts = clp.facts()
+        clp.printFacts()
+        for factID in facts:
+            if "reinforce-move" in facts[factID]:
+                reinforce = facts[factID]["reinforce-move"]
+                fromCountry = reinforce[0].replace("-", " ")
+                toCountry = reinforce[1].replace("-", " ")
+                howManyToMove = int(reinforce[2])
+                break
+        #print("********",fromCountry,toCountry,howManyToMove)
+        #input("You should be reinforcing.")
         pass
     return fromCountry,toCountry,howManyToMove
 

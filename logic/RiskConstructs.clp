@@ -42,6 +42,9 @@
 (deftemplate last-attack
 	(slot from)
 	(slot to) )
+
+(deftemplate path-to-border
+	(multislot path) )
 	
 (deffacts initial-facts
 	;; All borders for countries in Risk
