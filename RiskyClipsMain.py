@@ -328,7 +328,6 @@ def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
                 toCountry = reinforce[1].replace("-", " ")
                 howManyToMove = int(reinforce[2])
                 break
-        pass
     if DEBUG:
         print("Moving", howManyToMove, "troops from", fromCountry, "to", toCountry)
         input()

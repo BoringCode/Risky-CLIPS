@@ -22,8 +22,8 @@
         (reinforce-troops)
         (game-phase (player ?pname))
         (biggest-stronghold ?stronghold ?stronghold-troops)
-        (country (country-name ?stronghold-border))
         (border (country-a ?stronghold) (country-b ?stronghold-border))
+        (country (country-name ?stronghold-border))
         (not (path-to-border (path ?stronghold-border $?others)))
         =>
         (assert (path-to-border (path ?stronghold-border))) )
