@@ -204,14 +204,16 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=Fals
         clp.assertFacts(facts)
         clp.run()
         facts = clp.facts()
+        indexStringList = []
         # Get last fact (facts[list(facts.keys())] and indexes of book from choice {'book-choice': ['15.0', '4', '1', '0']}
         for factID in facts:
             if "book-choice" in facts[factID]:
                 indexStringList = facts[factID]["book-choice"][1:]
                 break
         #indexStringList = facts[list(facts.keys())[-1]]['book-choice'][1:]
-        for idx in indexStringList:
-            listOfCardIndicesToPlay.append(int(idx))
+        if indexStringList:
+            for idx in indexStringList:
+                listOfCardIndicesToPlay.append(int(idx))
     return listOfCardIndicesToPlay
 
 def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,attackFrom,manual=False):

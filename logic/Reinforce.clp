@@ -38,7 +38,7 @@
 
 (defrule search-for-border
         (game-phase (player ?pname))
-        ?path <- (path-to-border (path $?beginning ?last))
+        ?path <- (path-to-border (path $?beginning&:(< (length$ $?beginning) 4) ?last))
         (country (country-name ?owned-country) (owner ?pname))
         (border (country-a ?last) (country-b ?owned-country))
         =>
