@@ -4,6 +4,8 @@ from riskStructs import *
 import random
 from lib.ClipsWrapper import *
 
+DEBUG = False
+
 clp = CLIPS()
 clp.load("logic/RiskConstructs.clp")
 clp.load("logic/BookSelection.clp")
@@ -123,6 +125,9 @@ def attackToCountry(player,countryD,bookArmiesBonusList,playerDMe,attackFromCoun
                 break
         attackTo = attackCountry
         lastAttack[1] = attackTo
+        if DEBUG:
+            print("ATTACKING", attackFromCountry, "to", attackTo)
+            input()
         return attackCountry,countryD[attackCountry]["owner"]
 
 def continueAttack(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
@@ -324,6 +329,9 @@ def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
                 howManyToMove = int(reinforce[2])
                 break
         pass
+    if DEBUG:
+        print("Moving", howManyToMove, "troops from", fromCountry, "to", toCountry)
+        input()
     return fromCountry,toCountry,howManyToMove
 
 def placeArmies(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
