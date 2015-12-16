@@ -218,7 +218,6 @@ def getBookCardIndices(player,countryD,bookArmiesBonusList,playerDMe,manual=Fals
 
 def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,attackFrom,manual=False):
     if manual: #MANUAL
-        #clp.printFacts()
         howManyToMove = input("\nHow many of the " + str(countryD[attackFrom]["armies"]-1) + " armies would you like to move? => ")    
         if howManyToMove=="":
             howManyToMove=countryD[attackFrom]["armies"]-1
@@ -245,7 +244,6 @@ def tookCountryMoveArmiesHowMany(player,countryD,bookArmiesBonusList,playerDMe,a
         clp.assertFacts(facts)
         clp.run()
         facts = clp.facts()
-        #clp.printFacts()
         moveAmount = "none"
         for factID in facts:
             if "move-troop-amount" in facts[factID]:
@@ -318,7 +316,6 @@ def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
         clp.assertFacts(facts)
         clp.run()
         facts = clp.facts()
-        clp.printFacts()
         for factID in facts:
             if "reinforce-move" in facts[factID]:
                 reinforce = facts[factID]["reinforce-move"]
@@ -326,8 +323,6 @@ def troopMove(player,countryD,bookArmiesBonusList,playerDMe,manual=False):
                 toCountry = reinforce[1].replace("-", " ")
                 howManyToMove = int(reinforce[2])
                 break
-        #print("********",fromCountry,toCountry,howManyToMove)
-        #input("You should be reinforcing.")
         pass
     return fromCountry,toCountry,howManyToMove
 
